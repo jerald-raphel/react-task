@@ -8,12 +8,10 @@ const AddAttendance = ({ teams, setTeams }) => {
   const [addingWorkerTo, setAddingWorkerTo] = useState(null);
   const [newWorkerName, setNewWorkerName] = useState("");
 
-  
   useEffect(() => {
     localStorage.setItem("teamsData", JSON.stringify(teams));
   }, [teams]);
 
-  
   const handleAddWorker = (teamId, gender) => {
     if (!newWorkerName.trim()) return;
 
@@ -28,7 +26,7 @@ const AddAttendance = ({ teams, setTeams }) => {
                   id: Date.now(),
                   name: newWorkerName.trim(),
                   gender,
-                  status: "present", 
+                  status: "present",
                   shift: [],
                 },
               ],
@@ -40,14 +38,35 @@ const AddAttendance = ({ teams, setTeams }) => {
     setNewWorkerName("");
   };
 
-  
+  // Updated generateWorkers function
   const generateWorkers = (teamId) => {
-    let total = parseInt(prompt("Enter total workers (max 5):"));
-    if (!total || total <= 0) return;
+    let total = prompt("Enter total workers (max 5):");
+
+    // Check if input is a valid number
+    if (!/^\d+$/.test(total)) {
+      alert("Please enter a valid number!");
+      return;
+    }
+
+    total = parseInt(total);
+    if (total <= 0) {
+      alert("Please enter a number greater than 0!");
+      return;
+    }
+
     if (total > 5) total = 5;
 
-    let maleCount = parseInt(prompt(`How many male workers (0-${total})?`)) || 0;
+    let maleCount = prompt(`How many male workers (0-${total})?`);
+
+    if (!/^\d+$/.test(maleCount)) {
+      alert("Please enter a valid number for male workers!");
+      return;
+    }
+
+    maleCount = parseInt(maleCount);
+    if (maleCount < 0) maleCount = 0;
     if (maleCount > total) maleCount = total;
+
     const femaleCount = total - maleCount;
 
     const newWorkers = [];
@@ -56,7 +75,7 @@ const AddAttendance = ({ teams, setTeams }) => {
         id: Date.now() + i,
         name: randomNames[Math.floor(Math.random() * randomNames.length)],
         gender: "female",
-        status: "present", 
+        status: "present",
         shift: [],
       });
     }
@@ -65,7 +84,7 @@ const AddAttendance = ({ teams, setTeams }) => {
         id: Date.now() + i + femaleCount,
         name: randomNames[Math.floor(Math.random() * randomNames.length)],
         gender: "male",
-        status: "present", 
+        status: "present",
         shift: [],
       });
     }
@@ -76,7 +95,6 @@ const AddAttendance = ({ teams, setTeams }) => {
       )
     );
   };
-
 
   const updateStatus = (teamId, workerId, status) => {
     setTeams((prev) =>
@@ -108,7 +126,6 @@ const AddAttendance = ({ teams, setTeams }) => {
         >
           <h2>{team.teamName}</h2>
 
-        
           {addingWorkerTo === team.id ? (
             <div style={{ marginBottom: "10px" }}>
               <input
@@ -117,26 +134,37 @@ const AddAttendance = ({ teams, setTeams }) => {
                 value={newWorkerName}
                 onChange={(e) => setNewWorkerName(e.target.value)}
               />
-              <button onClick={() => handleAddWorker(team.id, "male")} style={{ marginLeft: "5px" }}>
+              <button
+                onClick={() => handleAddWorker(team.id, "male")}
+                style={{ marginLeft: "5px" }}
+              >
                 <img src={maleIcon} alt="Male" style={{ width: "20px" }} />
               </button>
-              <button onClick={() => handleAddWorker(team.id, "female")} style={{ marginLeft: "5px" }}>
+              <button
+                onClick={() => handleAddWorker(team.id, "female")}
+                style={{ marginLeft: "5px" }}
+              >
                 <img src={femaleIcon} alt="Female" style={{ width: "20px" }} />
               </button>
-              <button onClick={() => setAddingWorkerTo(null)} style={{ marginLeft: "5px" }}>
+              <button
+                onClick={() => setAddingWorkerTo(null)}
+                style={{ marginLeft: "5px" }}
+              >
                 Cancel
               </button>
             </div>
           ) : (
             <>
               <button onClick={() => setAddingWorkerTo(team.id)}>Add Worker</button>
-              <button onClick={() => generateWorkers(team.id)} style={{ marginLeft: "10px" }}>
+              <button
+                onClick={() => generateWorkers(team.id)}
+                style={{ marginLeft: "10px" }}
+              >
                 Auto Worker
               </button>
             </>
           )}
 
-        
           {team.labours.length > 0 && (
             <div style={{ marginTop: "10px" }}>
               <h4>Workers:</h4>
